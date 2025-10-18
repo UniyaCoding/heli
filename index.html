@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>heli.lua</title>
+</head>
+<body>
+<pre>
+local heli = script.Parent
+local speed = 0.5 -- kecepatan maju
+local bobSpeed = 2 -- kecepatan naik-turun
+local bobHeight = 0.5 -- tinggi naik-turun
+
+heli.PrimaryPart.Anchored = true
+task.wait(1)
+
+local t = 0
+while true do
+	t += 0.05
+	local dir = heli.PrimaryPart.CFrame.LookVector
+	local pos = heli.PrimaryPart.Position 
+		+ dir * speed
+		+ Vector3.new(0, math.sin(t * bobSpeed) * bobHeight, 0)
+
+	heli:MoveTo(pos)
+	task.wait(0.03)
+end
+</pre>
+</body>
+</html>

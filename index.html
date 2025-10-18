@@ -1,30 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>heli.lua</title>
+  <meta charset="UTF-8">
+  <title>Helikopter Script</title>
 </head>
 <body>
-<pre>
+  <pre>
+<code>
 local heli = script.Parent
-local speed = 0.5 -- kecepatan maju
+local speed = 0.8 -- kecepatan maju
 local bobSpeed = 2 -- kecepatan naik-turun
 local bobHeight = 0.5 -- tinggi naik-turun
+local radius = 80 -- ukuran lingkaran diperbesar (lebih luas)
+local angularSpeed = 0.4 -- kecepatan rotasi melingkar (lebih lambat supaya halus)
 
 heli.PrimaryPart.Anchored = true
-task.wait(1)
+task.wait(6) -- diam dulu 6 detik
 
-local t = 0
 while true do
-	t += 0.05
-	local dir = heli.PrimaryPart.CFrame.LookVector
-	local pos = heli.PrimaryPart.Position 
-		+ dir * speed
-		+ Vector3.new(0, math.sin(t * bobSpeed) * bobHeight, 0)
+	-- ====== Terbang lurus ======
+	local flyDuration = math.random(5, 10)
+	local flyStart = tick()
+	while tick() - flyStart &lt; flyDuration do
+		local dir = heli.PrimaryPart.CFrame.LookVector
+		local pos = heli.PrimaryPart.Position
+			+ dir * speed
+			+ Vector3.new(0, math.sin(tick() * bobSpeed) * bobHeight, 0)
+		heli:MoveTo(pos)
+		task.wait(0.03)
+	end
 
-	heli:MoveTo(pos)
-	task.wait(0.03)
+	-- ====== Berputar melingkar luas seperti angka 0 ======
+	local circleDuration = math.random(6, 10)
+	local angle = 0
+	local center = heli.PrimaryPart.Position
+
+	while angle &lt; math.pi * 2 * (circleDuration / 6) do
+		angle += angularSpeed * 0.05
+		local x = math.cos(angle) * radius
+		local z = math.sin(angle) * radius
+		local y = math.sin(angle * bobSpeed) * bobHeight
+
+		local pos = center + Vector3.new(x, y, z)
+		heli:MoveTo(pos)
+
+		-- Hadapkan heli ke arah gerakan
+		local nextPos = center + Vector3.new(math.cos(angle + 0.1) * radius, y, math.sin(angle + 0.1) * radius)
+		local lookAt = CFrame.lookAt(pos, nextPos)
+		heli:SetPrimaryPartCFrame(lookAt)
+
+		task.wait(0.03)
+	end
 end
-</pre>
+</code>
+  </pre>
 </body>
 </html>
